@@ -1,5 +1,5 @@
 import React from 'react';
-import {InputLabel, Select, MenuItem, FormControl, TextField, Tooltip} from '@material-ui/core';
+import {InputLabel, Select, MenuItem, FormControl, TextField} from '@material-ui/core';
 import {connect} from 'react-redux';
 import C from '../constants/predicate.constants';
 import PropTypes from 'prop-types';

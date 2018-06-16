@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { ADD_PREDICATE, REMOVE_PREDICATE, QUERY_TABLE, UPDATE_PREDICATE } from '../actions/predicate.types';
 
 const initialState = {
