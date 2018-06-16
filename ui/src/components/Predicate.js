@@ -1,5 +1,5 @@
 import React from 'react';
-import {InputLabel, Select, MenuItem, FormControl, TextField} from '@material-ui/core';
+import {InputLabel, Select, MenuItem, FormControl, TextField, Tooltip} from '@material-ui/core';
 import {connect} from 'react-redux';
 import C from '../constants/predicate.constants';
 import PropTypes from 'prop-types';
@@ -24,13 +24,13 @@ const filterFieldString = [
     { pretty: 'equals', key: 'equals' },
     { pretty: 'does not equal', key: 'doesntEqual' },
     { pretty: 'contains', key: 'contains' },
+    { pretty: 'does not contain', key: 'doesntContain' },
     { pretty: 'in list', key: 'inList' },
-    { pretty: 'not in list', key: 'notInList' },
-    { pretty: 'contains all', key: 'containsAll' }
+    { pretty: 'not in list', key: 'notInList' }
 ];
 const filterFieldNumber = [
     { pretty: 'range', key: 'range' },
-    { pretty: 'less than or equal', key: 'lessTHanOrEqual' },
+    { pretty: 'less than or equal', key: 'lessThanOrEqual' },
     { pretty: 'equals', key: 'equals' },
     { pretty: 'does not equal', key: 'doesntEqual' },
     { pretty: 'greater than or equal', key: 'greaterThanOrEqual' }
@@ -62,9 +62,7 @@ class Predicate extends React.Component {
     updatePredicate(field) {
         const that = this;
         return function(e) {
-            that.props.updatePredicate(that.props.item.id, {
-                [field]: e.target.value
-            });
+            const update = {[field]: e.target.value};
 
             if(field === 'predicateField') {
                 const type = predicateFields.find(item => item.key === e.target.value).type;
@@ -74,7 +72,12 @@ class Predicate extends React.Component {
                         disableAction: false
                     }
                 });
+
+                // need to plumb through type for the server
+                update.type = type;
             }
+
+            that.props.updatePredicate(that.props.item.id, update);
         }
     }
 
@@ -88,7 +91,7 @@ class Predicate extends React.Component {
             const fields = this.state.control.type === C.STRING ? filterFieldString : filterFieldNumber;
             filterFieldItems = fields.map(filter => <MenuItem key={filter.key} value={filter.key}>{filter.pretty}</MenuItem>);
         }
-
+        const valueTitle = (this.props.item.filterField === 'inList' || this.props.item.filterField === 'notInList') ? 'Comma Delimited' : 'Value';
         return (
             <div className="qm-root-element">
                 <FormControl className="qm-form-control">
@@ -121,7 +124,7 @@ class Predicate extends React.Component {
 
                 <TextField
                     id="name"
-                    label="Value"
+                    label={valueTitle}
                     disabled={this.state.control.disableAction}
                     value={this.props.item.filterValue}
                     onChange={this.updatePredicate('filterValue')}

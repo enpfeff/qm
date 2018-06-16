@@ -7,7 +7,8 @@ const initialState = {
         predicateField: '',
         filterField: '',
         filterValue: '',
-        rangeValue: ''
+        rangeValue: '',
+        type: ''
     }]
 };
 
