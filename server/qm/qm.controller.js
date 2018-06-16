@@ -4,6 +4,6 @@ module.exports = {
     query
 };
 
-async function query() {
-
+async function query(req, res) {
+    return res.send({sql: 'nope'});
 }

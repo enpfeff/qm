@@ -2,7 +2,7 @@ import React from 'react';
 import Predicate from './Predicate';
 import {Button, IconButton, Icon} from '@material-ui/core';
 import { connect } from 'react-redux';
-import { addPredicate, removePredicate } from "../actions/predicate.actions";
+import { addPredicate, removePredicate, queryTable } from "../actions/predicate.actions";
 import PropTypes from 'prop-types';
 import '../styles/predicates.scss';
 
@@ -22,7 +22,7 @@ class Predicates extends React.Component {
     }
 
     searchHandler() {
-        // console.log('gonna go search now')
+        this.props.queryTable(this.props.predicate.items);
     }
 
     addPredicate() {
@@ -64,7 +64,8 @@ const mapStateToProps = state => ({
 Predicates.propTypes = {
     predicate: PropTypes.object.isRequired,
     addPredicate: PropTypes.func.isRequired,
-    removePredicate: PropTypes.func.isRequired
+    removePredicate: PropTypes.func.isRequired,
+    queryTable: PropTypes.func.isRequired
 };
 
-export default connect(mapStateToProps, { addPredicate, removePredicate })(Predicates)
+export default connect(mapStateToProps, { addPredicate, removePredicate, queryTable })(Predicates)

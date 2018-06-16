@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const path = require('path');
+const bodyParser = require('body-parser');
 const _ = require('lodash');
 const log = require('./services/log');
 const C = require('./services/constants');
@@ -15,6 +16,8 @@ app.use(function(req, res, next) {
     next();
 });
 app.use(express.static(path.join(__dirname, '../ui/dist')));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 _.each(ENABLED_MODULES, module => module(app));
 

@@ -13,6 +13,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "bluebird": "~3.5.0",
+    "body-parser": "1.18.3",
     "elasticlunr": "^0.9.5",
     "express": "^4.16.3",
     "express-promise-router": "^3.0.1",

@@ -1,6 +1,6 @@
 import { ADD_PREDICATE, REMOVE_PREDICATE , QUERY_TABLE, UPDATE_PREDICATE} from "./predicate.types";
 
-let API_ENDPOINT = 'http://locahost:3000';
+let API_ENDPOINT = 'http://localhost:3002';
 let predicateId = 1;
 
 export function addPredicate() {
@@ -33,11 +33,17 @@ export function removePredicate(id) {
     };
 }
 
-export const queryTable = () => dispatch => {
-    const postData = {};
+export const queryTable = (items) => dispatch => {
+    const postData = {
+        predicates: items
+    };
     fetch(`${API_ENDPOINT}/predicate`, {
         method: 'POST',
-        post: JSON.stringify(postData)
+        body: JSON.stringify(postData),
+        headers: {
+            'content-type': 'application/json'
+        },
+        cache: 'no-cache'
     })
         .then(res => res.json())
         .then(res => dispatch({

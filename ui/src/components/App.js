@@ -1,11 +1,12 @@
 import React from 'react';
 import {CssBaseline, Typography, Divider, Grid, Paper} from '@material-ui/core';
-import {withStyles} from '@material-ui/core/styles';
 import Predicates from './Predicates';
 import PropTypes from 'prop-types';
 import '../styles/app.scss';
+import Result from './Result';
+import {connect} from 'react-redux';
 
-const styles = () => ({
+const styles = {
     root: {
         flexGrow: 1,
         flexDirection: 'column',
@@ -16,21 +17,19 @@ const styles = () => ({
         flexGrow: 1,
         flexDirection: 'column'
     }
-});
+};
 
 class App extends React.Component {
 
     render() {
-        const {classes} = this.props;
-
         return (
             <React.Fragment>
                 <CssBaseline/>
-                <div className={classes.root}>
-                    <Grid container className={classes.root} spacing={16}>
+                <div style={styles.root}>
+                    <Grid container style={styles.root} spacing={16}>
                         <Grid item>
                             <Paper>
-                                <Grid container className={classes.inner} spacing={16}>
+                                <Grid container style={styles.inner} spacing={16}>
                                     <Grid item>
                                         <Typography variant="headline" component="h3">
                                             Search for Sessions
@@ -45,6 +44,9 @@ class App extends React.Component {
                                 </Grid>
                             </Paper>
                         </Grid>
+                        <Grid item>
+                            <Result sql={this.props.predicate.sql} />
+                        </Grid>
                     </Grid>
                 </div>
             </React.Fragment>
@@ -53,7 +55,12 @@ class App extends React.Component {
 }
 
 App.propTypes = {
-    classes: PropTypes.object.isRequired,
+    predicate: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(App);
+
+const mapProps = state => ({
+    predicate: state.predicate
+});
+
+export default connect(mapProps)(App);

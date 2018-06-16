@@ -1,7 +1,10 @@
 import React from 'react';
 import {InputLabel, Select, MenuItem, FormControl, TextField} from '@material-ui/core';
+import {connect} from 'react-redux';
 import C from '../constants/predicate.constants';
+import PropTypes from 'prop-types';
 import '../styles/predicate.scss';
+import {updatePredicate} from "../actions/predicate.actions";
 
 const predicateFields = [
     { pretty: 'User email', key: 'userEmail', type: C.STRING},
@@ -37,47 +40,44 @@ class Predicate extends React.Component {
     constructor() {
         super();
         this.state = {
-            predicateField: '',
-            filterField: '',
-            filterValue: '',
-            rangeValue: '',
             control: {
                 disableAction: true,
                 type: undefined
             }
         };
-
-        this.predicateFieldHandler = this.predicateFieldHandler.bind(this);
-        this.filterFieldHandler = this.filterFieldHandler.bind(this);
-        this.filterValueHandler = this.filterValueHandler.bind(this);
+        this.updatePredicate = this.updatePredicate.bind(this);
     }
 
-    predicateFieldHandler(e) {
-        const predicateField = e.target.value;
-        const type = predicateFields.find(item => item.key === predicateField).type;
-
+    componentDidMount() {
+        if(this.props.item.predicateField === '') return;
+        const type = predicateFields.find(item => item.key === this.props.item.predicateField).type;
         this.setState({
-            predicateField,
-            filterField: '',
-            filterValue: '',
             control: {
-                type,
-                disableAction: false
+                disableAction: false,
+                type
             }
         });
     }
 
-    filterFieldHandler(e) {
-        const filterField = e.target.value;
-        this.setState({filterField});
-    }
-
-    filterValueHandler(key) {
+    updatePredicate(field) {
         const that = this;
         return function(e) {
-            that.setState({[key]: e.target.value});
+            that.props.updatePredicate(that.props.item.id, {
+                [field]: e.target.value
+            });
+
+            if(field === 'predicateField') {
+                const type = predicateFields.find(item => item.key === e.target.value).type;
+                that.setState({
+                    control: {
+                        type,
+                        disableAction: false
+                    }
+                });
+            }
         }
     }
+
 
     render() {
         let filterFieldItems = [];
@@ -94,8 +94,8 @@ class Predicate extends React.Component {
                 <FormControl className="qm-form-control">
                     <InputLabel>Field</InputLabel>
                     <Select
-                        value={this.state.predicateField}
-                        onChange={this.predicateFieldHandler}
+                        value={this.props.item.predicateField}
+                        onChange={this.updatePredicate('predicateField')}
                         inputProps={{
                             name: 'predicateField',
                         }}
@@ -109,8 +109,8 @@ class Predicate extends React.Component {
                 <FormControl disabled={this.state.control.disableAction} className="qm-form-control">
                     <InputLabel>Filter</InputLabel>
                     <Select
-                        value={this.state.filterField}
-                        onChange={this.filterFieldHandler}
+                        value={this.props.item.filterField}
+                        onChange={this.updatePredicate('filterField')}
                         inputProps={{
                             name: 'filterField',
                         }}
@@ -123,17 +123,17 @@ class Predicate extends React.Component {
                     id="name"
                     label="Value"
                     disabled={this.state.control.disableAction}
-                    value={this.state.filterValue}
-                    onChange={this.filterValueHandler('filterValue')}
+                    value={this.props.item.filterValue}
+                    onChange={this.updatePredicate('filterValue')}
                     margin="normal"
                 />
-                {(this.state.filterField === 'range') && (
+                {(this.props.item.filterField === 'range') && (
                     <React.Fragment>
                         <div className="is-box">and</div>
                         <TextField
                             label="Value"
-                            value={this.state.rangeValue}
-                            onChange={this.filterValueHandler('rangeValue')}
+                            value={this.props.item.rangeValue}
+                            onChange={this.updatePredicate('rangeValue')}
                             margin="normal"
                         />
                     </React.Fragment>
@@ -143,4 +143,10 @@ class Predicate extends React.Component {
     }
 }
 
-export default Predicate;
+
+Predicate.propTypes = {
+    item: PropTypes.object.isRequired,
+    updatePredicate: PropTypes.func.isRequired
+};
+
+export default connect(null, { updatePredicate })(Predicate);
