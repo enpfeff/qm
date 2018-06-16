@@ -1,27 +1,7 @@
 import React from 'react';
-import {IconButton, Icon, InputLabel, Select, MenuItem, FormControl, TextField} from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
+import {InputLabel, Select, MenuItem, FormControl, TextField} from '@material-ui/core';
 import C from '../constants/predicate.constants';
 import '../styles/predicate.scss';
-
-const styles = theme => ({
-    root: {
-        display: 'flex',
-        flexWrap: 'wrap',
-        flexDirection: 'row',
-        alignItems: 'baseline',
-        paddingBottom: 10
-    },
-    formControl: {
-        margin: theme.spacing.unit,
-        minWidth: 150,
-    },
-    textField: {
-        marginLeft: theme.spacing.unit,
-        marginRight: theme.spacing.unit,
-        width: 150,
-    },
-});
 
 const predicateFields = [
     { pretty: 'User email', key: 'userEmail', type: C.STRING},
@@ -54,17 +34,17 @@ const filterFieldNumber = [
 ];
 
 class Predicate extends React.Component {
-    constructor(props) {
-        super(props);
+    constructor() {
+        super();
         this.state = {
             predicateField: '',
             filterField: '',
-            type: undefined,
             filterValue: '',
+            rangeValue: '',
             control: {
-                disableAction: true
-            },
-            rangeValue: ''
+                disableAction: true,
+                type: undefined
+            }
         };
 
         this.predicateFieldHandler = this.predicateFieldHandler.bind(this);
@@ -80,8 +60,8 @@ class Predicate extends React.Component {
             predicateField,
             filterField: '',
             filterValue: '',
-            type,
             control: {
+                type,
                 disableAction: false
             }
         });
@@ -104,16 +84,14 @@ class Predicate extends React.Component {
         const predicateFieldItems = predicateFields.map(field => <MenuItem key={field.key} value={field.key}>{field.pretty}</MenuItem>);
 
         // determine what the filter fields should look like
-        if(this.state.type) {
-            const fields = this.state.type === C.STRING ? filterFieldString : filterFieldNumber;
+        if(this.state.control.type) {
+            const fields = this.state.control.type === C.STRING ? filterFieldString : filterFieldNumber;
             filterFieldItems = fields.map(filter => <MenuItem key={filter.key} value={filter.key}>{filter.pretty}</MenuItem>);
         }
 
-        const { classes } = this.props;
-
         return (
-            <form className={classes.root}>
-                <FormControl className={classes.formControl}>
+            <div className="qm-root-element">
+                <FormControl className="qm-form-control">
                     <InputLabel>Field</InputLabel>
                     <Select
                         value={this.state.predicateField}
@@ -126,9 +104,9 @@ class Predicate extends React.Component {
                     </Select>
                 </FormControl>
 
-                {(this.state.type === C.NUMBER) ? <div className="is-box">is</div> : ''}
+                {this.state.control.type === C.NUMBER && <div className="is-box">is</div>}
 
-                <FormControl disabled={this.state.control.disableAction} className={classes.formControl}>
+                <FormControl disabled={this.state.control.disableAction} className="qm-form-control">
                     <InputLabel>Filter</InputLabel>
                     <Select
                         value={this.state.filterField}
@@ -144,27 +122,25 @@ class Predicate extends React.Component {
                 <TextField
                     id="name"
                     label="Value"
-                    className={classes.textField}
                     disabled={this.state.control.disableAction}
                     value={this.state.filterValue}
                     onChange={this.filterValueHandler('filterValue')}
                     margin="normal"
                 />
-                {(this.state.filterField === 'range') ? (
+                {(this.state.filterField === 'range') && (
                     <React.Fragment>
                         <div className="is-box">and</div>
                         <TextField
                             label="Value"
-                            className={classes.textField}
                             value={this.state.rangeValue}
                             onChange={this.filterValueHandler('rangeValue')}
                             margin="normal"
                         />
                     </React.Fragment>
-                ) : ''}
-            </form>
+                )}
+            </div>
         );
     }
 }
 
-export default withStyles(styles)(Predicate);
+export default Predicate;

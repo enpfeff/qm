@@ -1,45 +1,70 @@
 import React from 'react';
-import C from '../constants/predicate.constants';
 import Predicate from './Predicate';
-import {Button,FormControl,IconButton,Icon} from '@material-ui/core';
+import {Button, IconButton, Icon} from '@material-ui/core';
+import { connect } from 'react-redux';
+import { addPredicate, removePredicate } from "../actions/predicate.actions";
+import PropTypes from 'prop-types';
 import '../styles/predicates.scss';
 
-export default class Predicates extends React.Component {
+class Predicates extends React.Component {
     constructor() {
         super();
-        this.state = {
-            // always want at least one default it to a string type
-            predicateItems: [{
-                type: C.STRING
-            }]
-        };
-
-        this.buttonClickHandler = this.buttonClickHandler.bind(this);
+        this.removePredicate = this.removePredicate.bind(this);
+        this.addPredicate = this.addPredicate.bind(this);
+        this.searchHandler = this.searchHandler.bind(this);
     }
 
-    buttonClickHandler(e) {
-        this.setState({predicateItems: this.state.predicateItems.concat({})})
+    removePredicate(id) {
+        const that = this;
+        return function() {
+            that.props.removePredicate(id);
+        };
+    }
+
+    searchHandler() {
+        // console.log('gonna go search now')
+    }
+
+    addPredicate() {
+        this.props.addPredicate();
     }
 
     render() {
-        const items = this.state.predicateItems.map((item, idx) => {
+        const andButton = (
+            <IconButton variant="contained" onClick={this.addPredicate} color="primary">
+                <Icon>add</Icon>
+            </IconButton>
+        );
+        const items = this.props.predicate.items.map((item, idx, array) => {
             return (
-                <div key={idx} className="predicate-container">
-                    <FormControl>
-                        <IconButton aria-label="Delete" color="secondary">
-                            <Icon>delete</Icon>
-                        </IconButton>
-                    </FormControl>
+                <div key={item.id} className="predicate-container">
+
+                    <IconButton aria-label="Delete" color="secondary" onClick={this.removePredicate(item.id)}>
+                        <Icon>delete</Icon>
+                    </IconButton>
+                    {idx === array.length - 1 && andButton}
                     <Predicate item={item}/>
                 </div>
             );
         });
 
         return (
-            <React.Fragment>
+            <div className="predicates-container">
                 {items}
-                <Button variant="contained" onClick={this.buttonClickHandler} color="primary">And</Button>
-            </React.Fragment>
+                <Button variant="contained" onClick={this.searchHandler} color="primary">Search</Button>
+            </div>
         );
     }
 }
+
+const mapStateToProps = state => ({
+    predicate: state.predicate
+});
+
+Predicates.propTypes = {
+    predicate: PropTypes.object.isRequired,
+    addPredicate: PropTypes.func.isRequired,
+    removePredicate: PropTypes.func.isRequired
+};
+
+export default connect(mapStateToProps, { addPredicate, removePredicate })(Predicates)
