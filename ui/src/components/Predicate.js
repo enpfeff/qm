@@ -1,5 +1,5 @@
 import React from 'react';
-import {IconButton, Icon, InputLabel, Select, MenuItem, FormControl} from '@material-ui/core';
+import {IconButton, Icon, InputLabel, Select, MenuItem, FormControl, TextField} from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import C from '../constants/predicate.constants';
 import '../styles/predicate.scss';
@@ -9,13 +9,18 @@ const styles = theme => ({
         display: 'flex',
         flexWrap: 'wrap',
         flexDirection: 'row',
-        alignItems: 'center',
+        alignItems: 'baseline',
         paddingBottom: 10
     },
     formControl: {
         margin: theme.spacing.unit,
         minWidth: 150,
-    }
+    },
+    textField: {
+        marginLeft: theme.spacing.unit,
+        marginRight: theme.spacing.unit,
+        width: 150,
+    },
 });
 
 const predicateFields = [
@@ -55,13 +60,16 @@ class Predicate extends React.Component {
             predicateField: '',
             filterField: '',
             type: undefined,
+            filterValue: '',
             control: {
                 disableAction: true
-            }
+            },
+            rangeValue: ''
         };
 
         this.predicateFieldHandler = this.predicateFieldHandler.bind(this);
         this.filterFieldHandler = this.filterFieldHandler.bind(this);
+        this.filterValueHandler = this.filterValueHandler.bind(this);
     }
 
     predicateFieldHandler(e) {
@@ -69,8 +77,9 @@ class Predicate extends React.Component {
         const type = predicateFields.find(item => item.key === predicateField).type;
 
         this.setState({
-            predicateField: predicateField,
+            predicateField,
             filterField: '',
+            filterValue: '',
             type,
             control: {
                 disableAction: false
@@ -79,7 +88,15 @@ class Predicate extends React.Component {
     }
 
     filterFieldHandler(e) {
+        const filterField = e.target.value;
+        this.setState({filterField});
+    }
 
+    filterValueHandler(key) {
+        const that = this;
+        return function(e) {
+            that.setState({[key]: e.target.value});
+        }
     }
 
     render() {
@@ -96,11 +113,6 @@ class Predicate extends React.Component {
 
         return (
             <form className={classes.root}>
-                <FormControl>
-                    <IconButton aria-label="Delete" color="secondary">
-                        <Icon>delete</Icon>
-                    </IconButton>
-                </FormControl>
                 <FormControl className={classes.formControl}>
                     <InputLabel>Field</InputLabel>
                     <Select
@@ -128,6 +140,28 @@ class Predicate extends React.Component {
                         {filterFieldItems}
                     </Select>
                 </FormControl>
+
+                <TextField
+                    id="name"
+                    label="Value"
+                    className={classes.textField}
+                    disabled={this.state.control.disableAction}
+                    value={this.state.filterValue}
+                    onChange={this.filterValueHandler('filterValue')}
+                    margin="normal"
+                />
+                {(this.state.filterField === 'range') ? (
+                    <React.Fragment>
+                        <div className="is-box">and</div>
+                        <TextField
+                            label="Value"
+                            className={classes.textField}
+                            value={this.state.rangeValue}
+                            onChange={this.filterValueHandler('rangeValue')}
+                            margin="normal"
+                        />
+                    </React.Fragment>
+                ) : ''}
             </form>
         );
     }
